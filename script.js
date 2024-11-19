@@ -41,15 +41,8 @@ function handlePlayerMove(event) {
 }
 
 function computerMove() {
-  const availableCols = [];
-  for (let col = 0; col < COLS; col++) {
-    if (getAvailableRow(col) !== -1) {
-      availableCols.push(col);
-    }
-  }
-
-  // Random computer move
-  const col = availableCols[Math.floor(Math.random() * availableCols.length)];
+  const bestMove = minimax(board, 3, -Infinity, Infinity, true); // Depth 3
+  const col = bestMove.col;
   const row = getAvailableRow(col);
 
   if (row === -1) return; // Column is full
@@ -63,6 +56,94 @@ function computerMove() {
   }
 
   currentPlayer = 'yellow';
+}
+
+function minimax(board, depth, alpha, beta, isMaximizingPlayer) {
+  const availableMoves = getAvailableMoves(board);
+  if (depth === 0 || availableMoves.length === 0) {
+    return { score: evaluateBoard(board), col: null };
+  }
+
+  let bestMove = { score: isMaximizingPlayer ? -Infinity : Infinity, col: null };
+
+  for (let move of availableMoves) {
+    const row = getAvailableRow(move);
+    board[row][move] = isMaximizingPlayer ? 'red' : 'yellow'; // Simulate the move
+
+    const score = minimax(board, depth - 1, alpha, beta, !isMaximizingPlayer).score;
+
+    board[row][move] = null; // Undo the move
+
+    if (isMaximizingPlayer) {
+      if (score > bestMove.score) {
+        bestMove.score = score;
+        bestMove.col = move;
+      }
+      alpha = Math.max(alpha, bestMove.score);
+    } else {
+      if (score < bestMove.score) {
+        bestMove.score = score;
+        bestMove.col = move;
+      }
+      beta = Math.min(beta, bestMove.score);
+    }
+
+    if (beta <= alpha) {
+      break; // Prune the branch
+    }
+  }
+
+  return bestMove;
+}
+
+function evaluateBoard(board) {
+  const playerScore = calculateScore(board, 'yellow');
+  const computerScore = calculateScore(board, 'red');
+  return computerScore - playerScore; // Maximize computer score, minimize player score
+}
+
+function calculateScore(board, player) {
+  let score = 0;
+  score += scoreLines(board, player, 1, 0); // Horizontal
+  score += scoreLines(board, player, 0, 1); // Vertical
+  score += scoreLines(board, player, 1, 1); // Diagonal /
+  score += scoreLines(board, player, 1, -1); // Diagonal \
+  return score;
+}
+
+function scoreLines(board, player, dRow, dCol) {
+  let score = 0;
+  for (let row = 0; row < ROWS; row++) {
+    for (let col = 0; col < COLS; col++) {
+      let lineScore = 0;
+      for (let i = 0; i < 4; i++) {
+        const r = row + i * dRow;
+        const c = col + i * dCol;
+        if (r >= 0 && r < ROWS && c >= 0 && c < COLS) {
+          if (board[r][c] === player) {
+            lineScore++;
+          } else if (board[r][c] !== null) {
+            lineScore--;
+          }
+        } else {
+          lineScore = -1;
+          break;
+        }
+      }
+      if (lineScore > 0) score += lineScore;
+    }
+  }
+  return score;
+}
+
+function getAvailableMoves(board) {
+  const moves = [];
+  for (let col = 0; col < COLS; col++) {
+    if (getAvailableRow(col) !== -1) {
+      moves.push(col);
+    }
+  }
+  return moves;
 }
 
 function getAvailableRow(col) {
