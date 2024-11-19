@@ -41,7 +41,7 @@ function handlePlayerMove(event) {
 }
 
 function computerMove() {
-  const bestMove = minimax(board, 3, -Infinity, Infinity, true); // Depth 3
+  const bestMove = minimax(board, 5, -Infinity, Infinity, true); // Depth 5 for stronger AI
   const col = bestMove.col;
   const row = getAvailableRow(col);
 
@@ -251,3 +251,4 @@ function restartGame() {
 restartBtn.addEventListener('click', restartGame);
 
 createBoard();
+
