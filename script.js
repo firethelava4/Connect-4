@@ -26,8 +26,8 @@ function handlePlayerMove(event) {
   const col = parseInt(event.target.dataset.col, 10);
   const row = getAvailableRow(col);
 
-  if (row === -1) return; // Column is full
-  
+  if (row === -1 || currentPlayer !== 'yellow') return; // Column is full or not player's turn
+
   // Make the player's move
   board[row][col] = 'yellow';
   updateBoard();
@@ -100,7 +100,7 @@ function minimax(board, depth, alpha, beta, isMaximizingPlayer) {
   return bestMove;
 }
 
-// Evaluate the board for scoring
+// Enhanced evaluation function for stronger AI
 function evaluateBoard(board) {
   const playerScore = calculateScore(board, 'yellow');
   const computerScore = calculateScore(board, 'red');
@@ -265,5 +265,6 @@ function restartGame() {
 restartBtn.addEventListener('click', restartGame);
 
 createBoard();
+
 
 
