@@ -6,6 +6,7 @@ let currentPlayer = 'yellow'; // Yellow is the player, Red is the computer
 const boardElement = document.getElementById('board');
 const restartBtn = document.getElementById('restartBtn');
 
+// Function to create the board UI
 function createBoard() {
   boardElement.innerHTML = '';
   for (let row = 0; row < ROWS; row++) {
@@ -20,10 +21,11 @@ function createBoard() {
   }
 }
 
+// Handle the player's move (yellow)
 function handlePlayerMove(event) {
-  const col = event.target.dataset.col;
+  const col = parseInt(event.target.dataset.col, 10);
   const row = getAvailableRow(col);
-  
+
   if (row === -1) return; // Column is full
   
   // Make the player's move
@@ -40,6 +42,7 @@ function handlePlayerMove(event) {
   setTimeout(computerMove, 500);
 }
 
+// Function for the computer's move (red)
 function computerMove() {
   const bestMove = minimax(board, 5, -Infinity, Infinity, true); // Depth 5 for stronger AI
   const col = bestMove.col;
@@ -58,6 +61,7 @@ function computerMove() {
   currentPlayer = 'yellow';
 }
 
+// Minimax algorithm with alpha-beta pruning
 function minimax(board, depth, alpha, beta, isMaximizingPlayer) {
   const availableMoves = getAvailableMoves(board);
   if (depth === 0 || availableMoves.length === 0) {
@@ -96,12 +100,14 @@ function minimax(board, depth, alpha, beta, isMaximizingPlayer) {
   return bestMove;
 }
 
+// Evaluate the board for scoring
 function evaluateBoard(board) {
   const playerScore = calculateScore(board, 'yellow');
   const computerScore = calculateScore(board, 'red');
   return computerScore - playerScore; // Maximize computer score, minimize player score
 }
 
+// Calculate the score for rows, columns, and diagonals
 function calculateScore(board, player) {
   let score = 0;
   score += scoreLines(board, player, 1, 0); // Horizontal
@@ -111,6 +117,7 @@ function calculateScore(board, player) {
   return score;
 }
 
+// Score individual lines (rows, columns, diagonals)
 function scoreLines(board, player, dRow, dCol) {
   let score = 0;
   for (let row = 0; row < ROWS; row++) {
@@ -136,6 +143,7 @@ function scoreLines(board, player, dRow, dCol) {
   return score;
 }
 
+// Get the available columns for a move
 function getAvailableMoves(board) {
   const moves = [];
   for (let col = 0; col < COLS; col++) {
@@ -146,6 +154,7 @@ function getAvailableMoves(board) {
   return moves;
 }
 
+// Get the row for the next available slot in the given column
 function getAvailableRow(col) {
   for (let row = ROWS - 1; row >= 0; row--) {
     if (!board[row][col]) {
@@ -155,6 +164,7 @@ function getAvailableRow(col) {
   return -1;
 }
 
+// Update the UI to reflect the current board state
 function updateBoard() {
   const cells = boardElement.querySelectorAll('.cell');
   cells.forEach(cell => {
@@ -169,8 +179,8 @@ function updateBoard() {
   });
 }
 
+// Check if a player has won
 function checkWinner(player) {
-  // Check horizontal, vertical, and diagonal lines for a win
   return (
     checkHorizontal(player) ||
     checkVertical(player) ||
@@ -178,6 +188,7 @@ function checkWinner(player) {
   );
 }
 
+// Check for a horizontal win
 function checkHorizontal(player) {
   for (let row = 0; row < ROWS; row++) {
     for (let col = 0; col < COLS - 3; col++) {
@@ -194,6 +205,7 @@ function checkHorizontal(player) {
   return false;
 }
 
+// Check for a vertical win
 function checkVertical(player) {
   for (let col = 0; col < COLS; col++) {
     for (let row = 0; row < ROWS - 3; row++) {
@@ -210,6 +222,7 @@ function checkVertical(player) {
   return false;
 }
 
+// Check for diagonal wins
 function checkDiagonals(player) {
   // Check descending diagonals
   for (let row = 0; row < ROWS - 3; row++) {
@@ -242,6 +255,7 @@ function checkDiagonals(player) {
   return false;
 }
 
+// Restart the game
 function restartGame() {
   board = Array.from({ length: ROWS }, () => Array(COLS).fill(null));
   currentPlayer = 'yellow';
@@ -251,4 +265,5 @@ function restartGame() {
 restartBtn.addEventListener('click', restartGame);
 
 createBoard();
+
 
