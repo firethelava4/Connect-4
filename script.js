@@ -1,8 +1,10 @@
 let points = 0;
+let gold = 0;
 
-// Update points display
-function updatePoints() {
+// Update points and gold displays
+function updatePointsAndGold() {
   document.getElementById("points-display").textContent = points;
+  document.getElementById("gold-display").textContent = gold;
 }
 
 // Open a game in the modal
@@ -14,6 +16,9 @@ function startGame(game) {
   } else if (game === 'password-game') {
     gameContainer.innerHTML = passwordGameHTML();
     initializePasswordGame();
+  } else if (game === 'tower-defense') {
+    gameContainer.innerHTML = towerDefenseHTML();
+    initializeTowerDefense();
   }
   document.getElementById("game-modal").classList.remove('hidden');
 }
@@ -24,69 +29,107 @@ function closeGame() {
   document.getElementById("game-container").innerHTML = '';
 }
 
-// Phishing Quiz
+// Phishing Quiz with Randomized Questions
+const questionBank = [
+  { question: "What should you do if you receive an email asking for sensitive information?", options: ["Ignore and Report", "Reply with Information"], answer: 0 },
+  { question: "You get a link in an email. What should you do?", options: ["Click it immediately", "Verify the source"], answer: 1 },
+  { question: "What is a common sign of a phishing email?", options: ["Grammatical Errors", "Professional Language"], answer: 0 },
+  // Add up to 30 questions here
+];
+
 function phishingQuizHTML() {
   return `
     <h2>Phishing Awareness Quiz</h2>
-    <p>Select the correct answer:</p>
-    <p>Q: You receive an email asking for your password. What do you do?</p>
-    <button onclick="submitQuizAnswer(true)">Ignore and Report</button>
-    <button onclick="submitQuizAnswer(false)">Reply with the password</button>
+    <div id="quiz-container"></div>
+    <button onclick="submitQuiz()">Submit Quiz</button>
   `;
 }
 
 function initializePhishingQuiz() {
-  window.submitQuizAnswer = function(isCorrect) {
-    if (isCorrect) {
-      const earnedPoints = Math.floor(Math.random() * 30) + 10; // Random points between 10-40
-      alert(`Correct! You earned ${earnedPoints} points!`);
-      points += earnedPoints;
-    } else {
-      alert('Oops! That was not the right choice.');
-    }
-    updatePoints();
+  const quizContainer = document.getElementById("quiz-container");
+  const questions = shuffleArray(questionBank).slice(0, 5); // Pick 5 random questions
+  quizContainer.innerHTML = questions.map((q, i) => `
+    <p>${q.question}</p>
+    ${q.options.map((opt, j) => `
+      <label><input type="radio" name="q${i}" value="${j}"> ${opt}</label><br>
+    `).join('')}
+  `).join('');
+
+  window.submitQuiz = function() {
+    let score = 0;
+    questions.forEach((q, i) => {
+      const selected = document.querySelector(`input[name="q${i}"]:checked`);
+      if (selected && parseInt(selected.value) === q.answer) {
+        score++;
+      }
+    });
+    alert(`You scored ${score} points!`);
+    points += score;
+    updatePointsAndGold();
     closeGame();
   };
 }
 
-// Password Strength Tester
-function passwordGameHTML() {
+// Tower Defense Game
+function towerDefenseHTML() {
   return `
-    <h2>Password Strength Tester</h2>
-    <p>Type a password to see its strength:</p>
-    <input type="text" id="password-input" placeholder="Enter a password">
-    <button onclick="checkPassword()">Check Password</button>
-    <p id="password-feedback"></p>
+    <h2>Cyber Defense Tower Game</h2>
+    <p id="game-status">Level 1</p>
+    <button onclick="startLevel()">Start Level</button>
+    <div id="boss-question"></div>
   `;
 }
 
-function initializePasswordGame() {
-  window.checkPassword = function() {
-    const password = document.getElementById("password-input").value;
-    const feedback = document.getElementById("password-feedback");
-    if (password.length >= 8 && /[A-Z]/.test(password) && /\d/.test(password)) {
-      feedback.textContent = 'Strong Password! You earned 15 points!';
-      points += 15;
-    } else {
-      feedback.textContent = 'Weak Password. Try including uppercase letters, numbers, and at least 8 characters.';
-    }
-    updatePoints();
+let level = 1;
+
+function initializeTowerDefense() {
+  const status = document.getElementById("game-status");
+  const bossQuestionDiv = document.getElementById("boss-question");
+
+  window.startLevel = function() {
+    const bossQuestion = shuffleArray(questionBank)[0]; // Pick random question
+    bossQuestionDiv.innerHTML = `
+      <p>${bossQuestion.question}</p>
+      ${bossQuestion.options.map((opt, i) => `
+        <button onclick="answerBoss(${i === bossQuestion.answer})">${opt}</button>
+      `).join('')}
+    `;
   };
+
+  window.answerBoss = function(isCorrect) {
+    if (isCorrect) {
+      gold += 5;
+      level++;
+      alert(`You defeated Level ${level - 1} Boss! Moving to Level ${level}`);
+      document.getElementById("game-status").textContent = `Level ${level}`;
+      updatePointsAndGold();
+    } else {
+      alert("You lost! Restarting from Level 1.");
+      level = 1;
+      document.getElementById("game-status").textContent = `Level ${level}`;
+    }
+  };
+}
+
+// Helper Functions
+function shuffleArray(array) {
+  return array.sort(() => Math.random() - 0.5);
 }
 
 // Redeem rewards
 function redeemReward(rewardName, cost) {
   if (points >= cost) {
     points -= cost;
-    updatePoints();
+    updatePointsAndGold();
     alert(`You redeemed: ${rewardName}\nRemaining points: ${points}`);
   } else {
     alert(`Not enough points! You need ${cost - points} more points to redeem this reward.`);
   }
 }
 
-// Initial points update
-updatePoints();
+// Initial update
+updatePointsAndGold();
+
 
 
 
