@@ -7,23 +7,26 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="game-container">
-        <h1>Cyber Tower Defense</h1>
-        <div class="info">
+    <div id="game-container">
+        <div id="info-panel">
             <p>Health: <span id="health">5</span></p>
             <p>Gold: <span id="gold">100</span></p>
             <p>Level: <span id="level">1</span></p>
+            <button id="pause-btn">Pause</button>
         </div>
-        <canvas id="gameCanvas" width="800" height="600"></canvas>
-        <div class="tower-shop">
-            <button id="buyBasic" onclick="buyTower('basic')">Basic Computer (20 Gold)</button>
-            <button id="buyMedium" onclick="buyTower('medium')">Medium Computer (50 Gold)</button>
-            <button id="buyLarge" onclick="buyTower('large')" disabled>Large Computer (100 Gold)</button>
-            <button id="buyCyberAttacker" onclick="buyTower('cyberAttacker')" disabled>Cyber Attacker (500 Gold)</button>
-            <button id="buyCyberSecurity" onclick="buyTower('cyberSecurity')" disabled>Cyber Security (1000 Gold)</button>
+        <div id="game-board">
+            <!-- Game grid (e.g., 10x10) will go here -->
         </div>
     </div>
-    <script src="game.js"></script>
+    <div id="tower-selection">
+        <button class="tower-btn" id="basic-computer-btn">Basic Computer (20 Gold)</button>
+        <button class="tower-btn" id="medium-computer-btn">Medium Computer (50 Gold)</button>
+        <button class="tower-btn" id="large-computer-btn">Large Computer (100 Gold)</button>
+        <button class="tower-btn" id="cyber-attacker-btn">Cyber Attacker (500 Gold)</button>
+        <button class="tower-btn" id="cyber-security-btn">Cyber Security (1000 Gold)</button>
+    </div>
+
+    <script src="script.js"></script>
 </body>
 </html>
 
