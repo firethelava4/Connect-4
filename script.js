@@ -1,182 +1,234 @@
-// Set up game variables
-let health = 5;
-let gold = 100;
-let level = 1;
-let gridSize = 10;
-let towers = [];
-let enemies = [];
-let currentTower = null;
-let enemySpeed = 500; // Speed of enemy movement in milliseconds
+let totalPoints = 0;
+let grid = [];
+let gridSize = 6;  // 6x6 grid for Candy Crush
 
-let towerCosts = {
-    basic: 20,
-    medium: 50,
-    large: 100,
-    cyber: 500,
-    security: 1000
-};
-
-let enemyTypes = {
-    mini: { health: 5, goldReward: 5, speed: 1 },
-    medium: { health: 20, goldReward: 20, speed: 2 },
-    huge: { health: 100, goldReward: 100, speed: 3 }
-};
-
-// Define enemy path (simplified as an array of indexes)
-let enemyPath = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];  // Straight path from left to right
-
-// Setup the game grid
-function createGameBoard() {
-    const gameBoard = document.getElementById("game-board");
-    for (let i = 0; i < gridSize * gridSize; i++) {
-        const cell = document.createElement("div");
-        cell.classList.add("cell");
-        cell.dataset.index = i;
-        cell.addEventListener("click", placeTower);
-        gameBoard.appendChild(cell);
-    }
+// Show the games section
+function showGames() {
+    document.getElementById("game-section").style.display = "block";
+    document.getElementById("quiz-section").style.display = "none";
+    document.getElementById("discount-section").style.display = "none";
+    document.getElementById("password-check-game").style.display = "none";
+    document.getElementById("candy-crush-game").style.display = "none";
 }
 
-// Place tower function
-function placeTower(event) {
-    if (currentTower && gold >= towerCosts[currentTower]) {
-        const cell = event.target;
-        if (!cell.hasChildNodes()) {
-            const tower = document.createElement("div");
-            tower.classList.add("tower", currentTower);
-            cell.appendChild(tower);
-            gold -= towerCosts[currentTower];
-            document.getElementById("gold").textContent = gold;
-            towers.push({ type: currentTower, position: parseInt(cell.dataset.index), range: 2 });
+// Show the quiz section
+function showQuizzes() {
+    document.getElementById("quiz-section").style.display = "block";
+    document.getElementById("game-section").style.display = "none";
+    document.getElementById("discount-section").style.display = "none";
+    document.getElementById("password-check-game").style.display = "none";
+    document.getElementById("candy-crush-game").style.display = "none";
+    loadQuiz();
+}
+
+// Show the discount redemption section
+function showDiscounts() {
+    document.getElementById("discount-section").style.display = "block";
+    document.getElementById("game-section").style.display = "none";
+    document.getElementById("quiz-section").style.display = "none";
+    document.getElementById("password-check-game").style.display = "none";
+    document.getElementById("candy-crush-game").style.display = "none";
+    displayDiscounts();
+}
+
+// Start Candy Crush-like game
+function startCandyCrushGame() {
+    grid = generateGrid();
+    renderGrid();
+    document.getElementById("candy-crush-game").style.display = "block";
+    document.getElementById("game-section").style.display = "none";
+}
+
+// Start Password Check game
+function startPasswordCheckGame() {
+    document.getElementById("password-check-game").style.display = "block";
+    document.getElementById("game-section").style.display = "none";
+}
+
+// Generate a random grid with 6x6 cells for Candy Crush
+function generateGrid() {
+    const computers = ['💻', '🖥️', '🖲️', '🖱️'];
+    let newGrid = [];
+    
+    for (let i = 0; i < gridSize; i++) {
+        let row = [];
+        for (let j = 0; j < gridSize; j++) {
+            const randomComputer = computers[Math.floor(Math.random() * computers.length)];
+            row.push(randomComputer);
+        }
+        newGrid.push(row);
+    }
+    
+    return newGrid;
+}
+
+// Render grid of computers (Candy Crush Game)
+function renderGrid() {
+    const container = document.getElementById('grid-container');
+    container.innerHTML = '';  // Clear previous grid
+    
+    for (let row = 0; row < gridSize; row++) {
+        for (let col = 0; col < gridSize; col++) {
+            const cell = document.createElement('div');
+            cell.classList.add('grid-item');
+            cell.textContent = grid[row][col];
+            cell.dataset.row = row;
+            cell.dataset.col = col;
+            cell.addEventListener('click', handleCellClick);
+            container.appendChild(cell);
         }
     }
 }
 
-// Set the current tower based on the selected button
-function setCurrentTower(towerType) {
-    currentTower = towerType;
+// Handle user clicks on the grid (Candy Crush Game)
+let firstCell = null;
+function handleCellClick(event) {
+    const row = event.target.dataset.row;
+    const col = event.target.dataset.col;
+    
+    if (firstCell) {
+        const secondCell = { row, col };
+        swapCells(firstCell, secondCell);
+        firstCell = null;
+    } else {
+        firstCell = { row, col };
+    }
 }
 
-// Start the game
-function startGame() {
-    createGameBoard();
-
-    // Event listeners for tower selection
-    document.getElementById("basic-computer-btn").addEventListener("click", () => setCurrentTower("basic"));
-    document.getElementById("medium-computer-btn").addEventListener("click", () => setCurrentTower("medium"));
-    document.getElementById("large-computer-btn").addEventListener("click", () => setCurrentTower("large"));
-    document.getElementById("cyber-attacker-btn").addEventListener("click", () => setCurrentTower("cyber"));
-    document.getElementById("cyber-security-btn").addEventListener("click", () => setCurrentTower("security"));
+// Swap cells in Candy Crush game logic
+function swapCells(first, second) {
+    const firstValue = grid[first.row][first.col];
+    const secondValue = grid[second.row][second.col];
+    
+    grid[first.row][first.col] = secondValue;
+    grid[second.row][second.col] = firstValue;
+    
+    const matches = findMatches();
+    if (matches.length > 0) {
+        removeMatches(matches);
+        totalPoints += 5;  // Award 5 points for a match
+        alert('Match Found! +5 Points');
+    } else {
+        grid[first.row][first.col] = firstValue;
+        grid[second.row][second.col] = secondValue;
+    }
+    
+    renderGrid();
+    document.getElementById("points").textContent = `Total Points: ${totalPoints}`;
 }
 
-// Update enemy movement
-function moveEnemies() {
-    enemies.forEach(enemy => {
-        // Move enemy along the path
-        const currentPosition = enemy.position;
-        if (currentPosition < enemyPath.length) {
-            enemy.position++;
-            let currentCell = document.querySelector(`[data-index='${enemyPath[currentPosition]}']`);
-            const enemyElement = document.createElement("div");
-            enemyElement.classList.add("enemy");
-            currentCell.appendChild(enemyElement);
-
-            // Check if the virus reaches the end of the path
-            if (currentPosition === enemyPath.length - 1) {
-                // Virus reaches the end and damages health
-                health -= 1;
-                document.getElementById("health").textContent = health;
-                enemyElement.remove();
-                enemies.splice(enemies.indexOf(enemy), 1); // Remove the enemy
+// Find matches in the Candy Crush grid
+function findMatches() {
+    let matches = [];
+    
+    for (let row = 0; row < gridSize; row++) {
+        for (let col = 0; col < gridSize - 2; col++) {
+            if (grid[row][col] === grid[row][col+1] && grid[row][col] === grid[row][col+2]) {
+                matches.push([[row, col], [row, col+1], [row, col+2]]);
             }
+        }
+    }
+    
+    for (let col = 0; col < gridSize; col++) {
+        for (let row = 0; row < gridSize - 2; row++) {
+            if (grid[row][col] === grid[row+1][col] && grid[row][col] === grid[row+2][col]) {
+                matches.push([[row, col], [row+1, col], [row+2, col]]);
+            }
+        }
+    }
+    
+    return matches;
+}
 
-            // Check for towers within range
-            towers.forEach(tower => {
-                // Check if the tower is within range of the enemy
-                if (Math.abs(tower.position - enemy.position) <= tower.range) {
-                    shootAtEnemy(tower, enemy, enemyElement);
+// Remove matched items (Candy Crush Game)
+function removeMatches(matches) {
+    matches.forEach(match => {
+        match.forEach(([row, col]) => {
+            grid[row][col] = null;
+        });
+    });
+    
+    // Apply gravity
+    for (let col = 0; col < gridSize; col++) {
+        for (let row = gridSize - 1; row >= 0; row--) {
+            if (grid[row][col] === null) {
+                for (let r = row - 1; r >= 0; r--) {
+                    if (grid[r][col] !== null) {
+                        grid[row][col] = grid[r][col];
+                        grid[r][col] = null;
+                        break;
+                    }
                 }
-            });
+            }
+        }
+    }
+}
+
+// Password Check Game Logic
+function checkPasswordStrength() {
+    const password = document.getElementById("password-input").value;
+    let points = 0;
+
+    if (password.length >= 8) points += 3;
+    if (/[A-Z]/.test(password)) points += 2;
+    if (/[a-z]/.test(password)) points += 2;
+    if (/\d/.test(password)) points += 1;
+    if (/[^A-Za-z0-9]/.test(password)) points += 2;
+
+    if (points >= 10) {
+        document.getElementById("password-feedback").textContent = "Strong password! You earned 10 points.";
+    } else {
+        document.getElementById("password-feedback").textContent = `Password strength: ${points} points. Try to make it stronger!`;
+    }
+
+    totalPoints += points;
+    document.getElementById("points").textContent = `Total Points: ${totalPoints}`;
+}
+
+// Quiz Game Logic (Placeholder for now)
+let quizQuestions = [
+    { question: "What is a strong password?", options: ["12345", "Password", "Mix of letters, numbers, symbols"], answer: "Mix of letters, numbers, symbols" },
+    { question: "What does phishing mean?", options: ["Stealing data through deceptive emails", "A type of fishing", "A malware attack"], answer: "Stealing data through deceptive emails" },
+    // Add more questions as necessary
+];
+
+// Load quiz questions
+function loadQuiz() {
+    let quizContent = '';
+    quizQuestions.forEach((question, index) => {
+        quizContent += `
+        <div>
+            <p>${question.question}</p>
+            <input type="radio" name="quiz${index}" value="${question.options[0]}"> ${question.options[0]}<br>
+            <input type="radio" name="quiz${index}" value="${question.options[1]}"> ${question.options[1]}<br>
+            <input type="radio" name="quiz${index}" value="${question.options[2]}"> ${question.options[2]}<br>
+        </div>
+        `;
+    });
+    document.getElementById("quiz-questions").innerHTML = quizContent;
+}
+
+// Submit quiz answers
+function submitQuiz() {
+    quizQuestions.forEach((question, index) => {
+        const selectedAnswer = document.querySelector(`input[name="quiz${index}"]:checked`);
+        if (selectedAnswer && selectedAnswer.value === question.answer) {
+            totalPoints += 1;
         }
     });
+
+    document.getElementById("points").textContent = `Total Points: ${totalPoints}`;
+    showDiscounts();
 }
 
-// Shooting logic (Tower hitting the enemy)
-function shootAtEnemy(tower, enemy, enemyElement) {
-    const damage = tower.type === 'basic' ? 1 : tower.type === 'medium' ? 3 : tower.type === 'large' ? 10 : tower.type === 'cyber' ? 50 : 100;
-    enemy.health -= damage;
-    
-    // If enemy health is less than or equal to 0, it is destroyed
-    if (enemy.health <= 0) {
-        enemyElement.remove();
-        gold += enemyTypes[enemy.type].goldReward;
-        document.getElementById("gold").textContent = gold;
-        enemies.splice(enemies.indexOf(enemy), 1); // Remove the enemy
-    }
-}
-
-// Spawn enemies based on level
-function spawnEnemies() {
-    let enemyType;
-    if (level >= 10) {
-        enemyType = "huge";
-    } else if (level >= 5) {
-        enemyType = "medium";
+// Display available discounts (Placeholder)
+function displayDiscounts() {
+    if (totalPoints >= 10) {
+        document.getElementById("available-discounts").innerHTML = "You can redeem your points for a 10% senior discount!";
     } else {
-        enemyType = "mini";
-    }
-
-    let enemy = { 
-        type: enemyType, 
-        health: enemyTypes[enemyType].health, 
-        position: 0, 
-        speed: enemyTypes[enemyType].speed 
-    };
-
-    enemies.push(enemy);
-}
-
-// Increase level difficulty
-function levelUp() {
-    level++;
-    document.getElementById("level").textContent = level;
-    spawnEnemies();
-}
-
-// Game update function
-function updateGame() {
-    moveEnemies();
-
-    // If all enemies are defeated, go to the next level
-    if (enemies.length === 0) {
-        levelUp();
-    }
-
-    // If health reaches 0, end game
-    if (health <= 0) {
-        alert("Game Over!");
-        resetGame();
+        document.getElementById("available-discounts").innerHTML = "Keep playing games and quizzes to earn discounts!";
     }
 }
-
-// Reset the game state
-function resetGame() {
-    health = 5;
-    gold = 100;
-    level = 1;
-    enemies = [];
-    towers = [];
-    document.getElementById("health").textContent = health;
-    document.getElementById("gold").textContent = gold;
-    document.getElementById("level").textContent = level;
-    createGameBoard();
-}
-
-// Start the game when page loads
-window.onload = function() {
-    startGame();
-    setInterval(updateGame, 1000); // Update every second
-};
 
 
 
