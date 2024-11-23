@@ -3,47 +3,33 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cybersecurity Learning Platform</title>
+    <title>Cyber Tower Defense</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <header>
-        <h1>Welcome to Cybersecurity Academy</h1>
-        <p>Points Earned: <span id="total-points">0</span></p>
-    </header>
-    
-    <main>
-        <section id="menu">
-            <h2>Select a Game</h2>
-            <button onclick="startTowerDefense()">Play Tower Defense</button>
-            <button onclick="startQuiz()">Take a Quiz</button>
-            <button onclick="startPasswordGame()">Password Strength Game</button>
-        </section>
-        
-        <section id="games" style="display: none;">
-            <canvas id="tower-defense" width="800" height="400" style="display: none;"></canvas>
-            <div id="quiz" style="display: none;">
-                <h3>Cybersecurity Quiz</h3>
-                <div id="question-container"></div>
-                <button onclick="submitQuiz()">Submit Answers</button>
-            </div>
-            <div id="password-game" style="display: none;">
-                <h3>Password Strength Checker</h3>
-                <input type="password" id="password-input" placeholder="Enter your password">
-                <button onclick="checkPassword()">Check Password</button>
-                <p id="password-feedback"></p>
-            </div>
-        </section>
-
-        <section id="redeem" style="display: none;">
-            <h2>Redeem Points for Discounts</h2>
-            <button onclick="redeemDiscount()">Redeem Now!</button>
-        </section>
-    </main>
-    
-    <script src="script.js"></script>
+    <div class="game-container">
+        <h1>Cyber Tower Defense</h1>
+        <div class="info">
+            <p>Health: <span id="health">5</span></p>
+            <p>Gold: <span id="gold">100</span></p>
+            <p>Level: <span id="level">1</span></p>
+        </div>
+        <canvas id="gameCanvas" width="800" height="600"></canvas>
+        <div class="tower-shop">
+            <button id="buyBasic" onclick="buyTower('basic')">Basic Computer (20 Gold)</button>
+            <button id="buyMedium" onclick="buyTower('medium')">Medium Computer (50 Gold)</button>
+            <button id="buyLarge" onclick="buyTower('large')" disabled>Large Computer (100 Gold)</button>
+            <button id="buyCyberAttacker" onclick="buyTower('cyberAttacker')" disabled>Cyber Attacker (500 Gold)</button>
+            <button id="buyCyberSecurity" onclick="buyTower('cyberSecurity')" disabled>Cyber Security (1000 Gold)</button>
+        </div>
+        <div id="quiz" class="quiz">
+            <!-- Cyber security quiz content will be here -->
+        </div>
+    </div>
+    <script src="game.js"></script>
 </body>
 </html>
+
 
 
 
