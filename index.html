@@ -1,67 +1,47 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Cybersecurity Learning for Seniors</title>
-  <link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cybersecurity Learning Platform</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <header>
-    <h1>Cybersecurity for Seniors</h1>
-    <p>Learn, Play, and Earn Rewards!</p>
-  </header>
+    <header>
+        <h1>Welcome to Cybersecurity Academy</h1>
+        <p>Points Earned: <span id="total-points">0</span></p>
+    </header>
+    
+    <main>
+        <section id="menu">
+            <h2>Select a Game</h2>
+            <button onclick="startTowerDefense()">Play Tower Defense</button>
+            <button onclick="startQuiz()">Take a Quiz</button>
+            <button onclick="startPasswordGame()">Password Strength Game</button>
+        </section>
+        
+        <section id="games" style="display: none;">
+            <canvas id="tower-defense" width="800" height="400" style="display: none;"></canvas>
+            <div id="quiz" style="display: none;">
+                <h3>Cybersecurity Quiz</h3>
+                <div id="question-container"></div>
+                <button onclick="submitQuiz()">Submit Answers</button>
+            </div>
+            <div id="password-game" style="display: none;">
+                <h3>Password Strength Checker</h3>
+                <input type="password" id="password-input" placeholder="Enter your password">
+                <button onclick="checkPassword()">Check Password</button>
+                <p id="password-feedback"></p>
+            </div>
+        </section>
 
-  <main>
-    <div id="dashboard">
-      <section id="points-section">
-        <h2>Your Points: <span id="points-display">0</span></h2>
-        <h2>Your Gold: <span id="gold-display">0</span></h2>
-      </section>
-
-      <section id="games-section">
-        <h2>Available Mini-Games and Quizzes</h2>
-        <div class="game" onclick="startGame('phishing-quiz')">
-          <h3>Phishing Awareness Quiz</h3>
-          <p>Learn how to spot phishing emails!</p>
-        </div>
-        <div class="game" onclick="startGame('password-game')">
-          <h3>Password Strength Tester</h3>
-          <p>Learn to create strong passwords!</p>
-        </div>
-        <div class="game" onclick="startGame('tower-defense')">
-          <h3>Cyber Defense Tower Game</h3>
-          <p>Defend your network from attacks!</p>
-        </div>
-      </section>
-
-      <section id="rewards-section">
-        <h2>Redeem Your Points</h2>
-        <div class="reward" onclick="redeemReward('10% Discount', 50)">
-          <h3>10% Off Your Purchase</h3>
-          <p>Cost: 50 Points</p>
-        </div>
-        <div class="reward" onclick="redeemReward('20% Discount', 100)">
-          <h3>20% Off Your Purchase</h3>
-          <p>Cost: 100 Points</p>
-        </div>
-      </section>
-    </div>
-
-    <!-- Game Modal -->
-    <div id="game-modal" class="modal hidden">
-      <div class="modal-content">
-        <button class="close-btn" onclick="closeGame()">×</button>
-        <div id="game-container"></div>
-      </div>
-    </div>
-  </main>
-
-  <footer>
-    <p>© 2024 Cybersecurity for Seniors</p>
-  </footer>
-
-  <script src="script.js"></script>
+        <section id="redeem" style="display: none;">
+            <h2>Redeem Points for Discounts</h2>
+            <button onclick="redeemDiscount()">Redeem Now!</button>
+        </section>
+    </main>
+    
+    <script src="script.js"></script>
 </body>
 </html>
 
