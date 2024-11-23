@@ -3,16 +3,56 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Connect 4 Game</title>
+  <title>Cybersecurity Learning for Seniors</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <div class="container">
-    <h1>Connect 4</h1>
-    <div id="board" class="board"></div>
-    <button id="restartBtn">Restart Game</button>
-  </div>
-  
+  <header>
+    <h1>Cybersecurity for Seniors</h1>
+    <p>Learn, Play, and Earn Rewards!</p>
+  </header>
+
+  <main>
+    <div id="dashboard">
+      <section id="points-section">
+        <h2>Your Points: <span id="points-display">0</span></h2>
+      </section>
+
+      <section id="games-section">
+        <h2>Available Mini-Games and Quizzes</h2>
+        <div class="game" onclick="playGame('phishing-quiz')">
+          <h3>Phishing Awareness Quiz</h3>
+          <p>Learn how to spot phishing emails!</p>
+        </div>
+        <div class="game" onclick="playGame('password-game')">
+          <h3>Password Strength Tester</h3>
+          <p>Learn to create strong passwords!</p>
+        </div>
+        <div class="game" onclick="playGame('secure-browsing')">
+          <h3>Secure Browsing Tips</h3>
+          <p>Test your safe browsing knowledge!</p>
+        </div>
+      </section>
+
+      <section id="rewards-section">
+        <h2>Redeem Your Points</h2>
+        <div class="reward" onclick="redeemReward('10% Discount', 50)">
+          <h3>10% Off Your Purchase</h3>
+          <p>Cost: 50 Points</p>
+        </div>
+        <div class="reward" onclick="redeemReward('20% Discount', 100)">
+          <h3>20% Off Your Purchase</h3>
+          <p>Cost: 100 Points</p>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <footer>
+    <p>© 2024 Cybersecurity for Seniors</p>
+  </footer>
+
   <script src="script.js"></script>
 </body>
 </html>
+
