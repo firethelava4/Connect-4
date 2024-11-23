@@ -1,54 +1,66 @@
 body {
   font-family: Arial, sans-serif;
-  text-align: center;
-  background-color: #f3f3f3;
-}
-
-.container {
-  max-width: 600px;
-  margin: 0 auto;
-  padding: 20px;
-}
-
-h1 {
+  line-height: 1.6;
+  margin: 0;
+  padding: 0;
+  background-color: #f9f9f9;
   color: #333;
 }
 
-.board {
-  display: grid;
-  grid-template-columns: repeat(7, 80px);
-  grid-template-rows: repeat(6, 80px);
-  gap: 10px;
-  margin: 20px 0;
-  justify-content: center;
-}
-
-.cell {
-  width: 80px;
-  height: 80px;
-  background-color: #fff;
-  border: 2px solid #333;
-  border-radius: 50%;
-  cursor: pointer;
-}
-
-.cell.red {
-  background-color: red;
-}
-
-.cell.yellow {
-  background-color: yellow;
-}
-
-button {
-  padding: 10px 20px;
-  background-color: #333;
+header {
+  background: #0073e6;
   color: #fff;
-  border: none;
-  cursor: pointer;
-  font-size: 16px;
+  padding: 1rem;
+  text-align: center;
 }
 
-button:hover {
-  background-color: #555;
+main {
+  padding: 1rem;
+}
+
+#dashboard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  max-width: 800px;
+  margin: auto;
+}
+
+section {
+  margin-bottom: 2rem;
+  width: 100%;
+}
+
+#points-section {
+  text-align: center;
+  background: #e6f7ff;
+  padding: 1rem;
+  border-radius: 10px;
+  margin-bottom: 1rem;
+}
+
+.game, .reward {
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  padding: 1rem;
+  margin: 1rem 0;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.game:hover, .reward:hover {
+  background: #f0f0f0;
+}
+
+h3 {
+  margin-top: 0;
+}
+
+footer {
+  text-align: center;
+  background: #0073e6;
+  color: #fff;
+  padding: 1rem 0;
+  margin-top: 2rem;
 }
