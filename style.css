@@ -1,50 +1,44 @@
 body {
     font-family: Arial, sans-serif;
-    background-color: #f7f9fc;
-    color: #333;
-    text-align: center;
+    background-color: #f4f4f4;
     margin: 0;
     padding: 0;
 }
 
-header {
-    background-color: #4CAF50;
-    color: white;
-    padding: 10px 0;
+.game-container {
+    text-align: center;
+    margin-top: 50px;
 }
 
-main {
-    padding: 20px;
+#gameCanvas {
+    border: 1px solid black;
+    background-color: #ddd;
+}
+
+.info {
+    font-size: 18px;
+}
+
+.tower-shop {
+    margin-top: 20px;
 }
 
 button {
-    margin: 10px;
-    padding: 10px 20px;
-    background-color: #4CAF50;
-    color: white;
-    border: none;
+    margin: 5px;
+    padding: 10px;
+    font-size: 16px;
     cursor: pointer;
-    border-radius: 5px;
 }
 
-button:hover {
-    background-color: #45a049;
+button:disabled {
+    background-color: grey;
+    cursor: not-allowed;
 }
 
-canvas {
-    border: 1px solid #ccc;
-    margin: 20px auto;
-    display: block;
+.quiz {
+    margin-top: 20px;
+    display: none;
 }
 
-#quiz, #password-game {
-    margin: 20px auto;
-    text-align: left;
-    width: 50%;
-    background-color: #fff;
-    border: 1px solid #ccc;
-    padding: 20px;
-    border-radius: 8px;
-}
 
 
