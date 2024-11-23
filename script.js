@@ -22,6 +22,9 @@ let enemyTypes = {
     huge: { health: 100, goldReward: 100, speed: 3 }
 };
 
+// Define enemy path (simplified as an array of indexes)
+let enemyPath = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];  // Straight path from left to right
+
 // Setup the game grid
 function createGameBoard() {
     const gameBoard = document.getElementById("game-board");
@@ -44,7 +47,7 @@ function placeTower(event) {
             cell.appendChild(tower);
             gold -= towerCosts[currentTower];
             document.getElementById("gold").textContent = gold;
-            towers.push({ type: currentTower, position: parseInt(cell.dataset.index) });
+            towers.push({ type: currentTower, position: parseInt(cell.dataset.index), range: 2 });
         }
     }
 }
@@ -66,8 +69,51 @@ function startGame() {
     document.getElementById("cyber-security-btn").addEventListener("click", () => setCurrentTower("security"));
 }
 
-// Define enemy path (simplified as an array of indexes)
-let enemyPath = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
+// Update enemy movement
+function moveEnemies() {
+    enemies.forEach(enemy => {
+        // Move enemy along the path
+        const currentPosition = enemy.position;
+        if (currentPosition < enemyPath.length) {
+            enemy.position++;
+            let currentCell = document.querySelector(`[data-index='${enemyPath[currentPosition]}']`);
+            const enemyElement = document.createElement("div");
+            enemyElement.classList.add("enemy");
+            currentCell.appendChild(enemyElement);
+
+            // Check if the virus reaches the end of the path
+            if (currentPosition === enemyPath.length - 1) {
+                // Virus reaches the end and damages health
+                health -= 1;
+                document.getElementById("health").textContent = health;
+                enemyElement.remove();
+                enemies.splice(enemies.indexOf(enemy), 1); // Remove the enemy
+            }
+
+            // Check for towers within range
+            towers.forEach(tower => {
+                // Check if the tower is within range of the enemy
+                if (Math.abs(tower.position - enemy.position) <= tower.range) {
+                    shootAtEnemy(tower, enemy, enemyElement);
+                }
+            });
+        }
+    });
+}
+
+// Shooting logic (Tower hitting the enemy)
+function shootAtEnemy(tower, enemy, enemyElement) {
+    const damage = tower.type === 'basic' ? 1 : tower.type === 'medium' ? 3 : tower.type === 'large' ? 10 : tower.type === 'cyber' ? 50 : 100;
+    enemy.health -= damage;
+    
+    // If enemy health is less than or equal to 0, it is destroyed
+    if (enemy.health <= 0) {
+        enemyElement.remove();
+        gold += enemyTypes[enemy.type].goldReward;
+        document.getElementById("gold").textContent = gold;
+        enemies.splice(enemies.indexOf(enemy), 1); // Remove the enemy
+    }
+}
 
 // Spawn enemies based on level
 function spawnEnemies() {
@@ -90,42 +136,6 @@ function spawnEnemies() {
     enemies.push(enemy);
 }
 
-// Update enemy movement and collision detection
-function moveEnemies() {
-    enemies.forEach(enemy => {
-        // Move enemy along the path
-        const currentPosition = enemy.position;
-        if (currentPosition < enemyPath.length) {
-            enemy.position++;
-            let currentCell = document.querySelector(`[data-index='${enemyPath[currentPosition]}']`);
-            const enemyElement = document.createElement("div");
-            enemyElement.classList.add("enemy");
-            currentCell.appendChild(enemyElement);
-
-            // Check for tower collision
-            towers.forEach(tower => {
-                // Check if tower is in range (simple distance calculation)
-                if (Math.abs(tower.position - enemy.position) <= 2) {
-                    enemy.health -= 1; // Each tower deals 1 damage
-                    if (enemy.health <= 0) {
-                        enemyElement.remove();
-                        gold += enemyTypes[enemy.type].goldReward;
-                        document.getElementById("gold").textContent = gold;
-                    }
-                }
-            });
-        } else {
-            // Enemy reaches the end of the path
-            health -= 1;
-            if (health <= 0) {
-                alert("Game Over!");
-                resetGame();
-            }
-            enemies.splice(enemies.indexOf(enemy), 1); // Remove enemy
-        }
-    });
-}
-
 // Increase level difficulty
 function levelUp() {
     level++;
@@ -141,13 +151,33 @@ function updateGame() {
     if (enemies.length === 0) {
         levelUp();
     }
+
+    // If health reaches 0, end game
+    if (health <= 0) {
+        alert("Game Over!");
+        resetGame();
+    }
+}
+
+// Reset the game state
+function resetGame() {
+    health = 5;
+    gold = 100;
+    level = 1;
+    enemies = [];
+    towers = [];
+    document.getElementById("health").textContent = health;
+    document.getElementById("gold").textContent = gold;
+    document.getElementById("level").textContent = level;
+    createGameBoard();
 }
 
 // Start the game when page loads
 window.onload = function() {
     startGame();
-    setInterval(updateGame, 1000); // Update every second (placeholder)
+    setInterval(updateGame, 1000); // Update every second
 };
+
 
 
 
