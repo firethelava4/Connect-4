@@ -1,169 +1,153 @@
-// game.js
+// Set up game variables
 let health = 5;
 let gold = 100;
 let level = 1;
+let gridSize = 10;
 let towers = [];
-let viruses = [];
-let path = [
-    { x: 0, y: 100 }, // Starting point (top left)
-    { x: 200, y: 100 },
-    { x: 200, y: 300 },
-    { x: 600, y: 300 },
-    { x: 600, y: 500 },
-    { x: 800, y: 500 } // Ending point (bottom right)
-];
-let gameInterval;
-const canvas = document.getElementById("gameCanvas");
-const ctx = canvas.getContext("2d");
-const healthDisplay = document.getElementById("health");
-const goldDisplay = document.getElementById("gold");
-const levelDisplay = document.getElementById("level");
+let enemies = [];
+let currentTower = null;
+let enemySpeed = 500; // Speed of enemy movement in milliseconds
 
-const towersData = {
-    basic: { cost: 20, damage: 1 },
-    medium: { cost: 50, damage: 3 },
-    large: { cost: 100, damage: 10 },
-    cyberAttacker: { cost: 500, damage: 50 },
-    cyberSecurity: { cost: 1000, damage: 100 }
+let towerCosts = {
+    basic: 20,
+    medium: 50,
+    large: 100,
+    cyber: 500,
+    security: 1000
 };
 
-// Initialize game
-function startGame() {
-    gameInterval = setInterval(updateGame, 1000 / 60); // 60 FPS
-}
+let enemyTypes = {
+    mini: { health: 5, goldReward: 5, speed: 1 },
+    medium: { health: 20, goldReward: 20, speed: 2 },
+    huge: { health: 100, goldReward: 100, speed: 3 }
+};
 
-// Game update loop
-function updateGame() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-    // Update UI elements
-    levelDisplay.textContent = level;
-    healthDisplay.textContent = health;
-    goldDisplay.textContent = gold;
-
-    // Update viruses
-    updateViruses();
-
-    // Update towers
-    towers.forEach(tower => {
-        ctx.beginPath();
-        ctx.arc(tower.x, tower.y, 20, 0, Math.PI * 2);
-        ctx.fillStyle = tower.color;
-        ctx.fill();
-        ctx.closePath();
-    });
-
-    // Check for collisions (viruses vs towers)
-    checkCollisions();
-}
-
-// Create new virus
-function spawnVirus() {
-    let virusType;
-    if (level < 5) {
-        virusType = { health: 5, goldReward: 5, color: "red" };
-    } else if (level < 10) {
-        virusType = { health: 20, goldReward: 20, color: "blue" };
-    } else {
-        virusType = { health: 100, goldReward: 100, color: "green" };
+// Setup the game grid
+function createGameBoard() {
+    const gameBoard = document.getElementById("game-board");
+    for (let i = 0; i < gridSize * gridSize; i++) {
+        const cell = document.createElement("div");
+        cell.classList.add("cell");
+        cell.dataset.index = i;
+        cell.addEventListener("click", placeTower);
+        gameBoard.appendChild(cell);
     }
-
-    const virus = {
-        x: path[0].x,
-        y: path[0].y,
-        health: virusType.health,
-        goldReward: virusType.goldReward,
-        color: virusType.color,
-        pathIndex: 0
-    };
-
-    viruses.push(virus);
 }
 
-// Move viruses along the path
-function updateViruses() {
-    viruses.forEach(virus => {
-        let target = path[virus.pathIndex];
-        let dx = target.x - virus.x;
-        let dy = target.y - virus.y;
-        let distance = Math.sqrt(dx * dx + dy * dy);
-        
-        // Move virus towards target
-        if (distance < 5) {
-            virus.pathIndex++;
-            if (virus.pathIndex >= path.length) {
-                health -= 1; // Virus reaches end
-                viruses.splice(viruses.indexOf(virus), 1);
-                if (health <= 0) {
-                    alert("Game Over! Restarting...");
-                    resetGame();
-                }
-            }
-        } else {
-            virus.x += dx / distance * 2; // Move along path
-            virus.y += dy / distance * 2;
+// Place tower function
+function placeTower(event) {
+    if (currentTower && gold >= towerCosts[currentTower]) {
+        const cell = event.target;
+        if (!cell.hasChildNodes()) {
+            const tower = document.createElement("div");
+            tower.classList.add("tower", currentTower);
+            cell.appendChild(tower);
+            gold -= towerCosts[currentTower];
+            document.getElementById("gold").textContent = gold;
+            towers.push({ type: currentTower, position: parseInt(cell.dataset.index) });
         }
-
-        // Draw the virus
-        ctx.beginPath();
-        ctx.arc(virus.x, virus.y, 10, 0, Math.PI * 2);
-        ctx.fillStyle = virus.color;
-        ctx.fill();
-        ctx.closePath();
-    });
-}
-
-// Place tower on the canvas
-function buyTower(type) {
-    if (gold >= towersData[type].cost) {
-        gold -= towersData[type].cost;
-        towers.push({
-            x: Math.random() * (canvas.width - 40) + 20, // Random position for tower
-            y: Math.random() * (canvas.height - 40) + 20,
-            type: type,
-            color: type === "basic" ? "yellow" : type === "medium" ? "orange" : "purple",
-            damage: towersData[type].damage
-        });
     }
 }
 
-// Check collisions between towers and viruses
-function checkCollisions() {
-    towers.forEach(tower => {
-        viruses.forEach(virus => {
-            let dx = virus.x - tower.x;
-            let dy = virus.y - tower.y;
-            let distance = Math.sqrt(dx * dx + dy * dy);
-
-            // If virus is in range of tower, attack it
-            if (distance < 50) {
-                virus.health -= tower.damage;
-                if (virus.health <= 0) {
-                    gold += virus.goldReward; // Reward for defeating virus
-                    viruses.splice(viruses.indexOf(virus), 1);
-                }
-            }
-        });
-    });
-}
-
-// Reset the game
-function resetGame() {
-    health = 5;
-    gold = 100;
-    level = 1;
-    towers = [];
-    viruses = [];
-    startGame();
+// Set the current tower based on the selected button
+function setCurrentTower(towerType) {
+    currentTower = towerType;
 }
 
 // Start the game
-startGame();
+function startGame() {
+    createGameBoard();
 
-// Periodically spawn viruses based on level
-setInterval(() => {
-    if (level >= 1) spawnVirus();
-}, 3000); // Spawn a virus every 3 seconds
+    // Event listeners for tower selection
+    document.getElementById("basic-computer-btn").addEventListener("click", () => setCurrentTower("basic"));
+    document.getElementById("medium-computer-btn").addEventListener("click", () => setCurrentTower("medium"));
+    document.getElementById("large-computer-btn").addEventListener("click", () => setCurrentTower("large"));
+    document.getElementById("cyber-attacker-btn").addEventListener("click", () => setCurrentTower("cyber"));
+    document.getElementById("cyber-security-btn").addEventListener("click", () => setCurrentTower("security"));
+}
+
+// Define enemy path (simplified as an array of indexes)
+let enemyPath = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
+
+// Spawn enemies based on level
+function spawnEnemies() {
+    let enemyType;
+    if (level >= 10) {
+        enemyType = "huge";
+    } else if (level >= 5) {
+        enemyType = "medium";
+    } else {
+        enemyType = "mini";
+    }
+
+    let enemy = { 
+        type: enemyType, 
+        health: enemyTypes[enemyType].health, 
+        position: 0, 
+        speed: enemyTypes[enemyType].speed 
+    };
+
+    enemies.push(enemy);
+}
+
+// Update enemy movement and collision detection
+function moveEnemies() {
+    enemies.forEach(enemy => {
+        // Move enemy along the path
+        const currentPosition = enemy.position;
+        if (currentPosition < enemyPath.length) {
+            enemy.position++;
+            let currentCell = document.querySelector(`[data-index='${enemyPath[currentPosition]}']`);
+            const enemyElement = document.createElement("div");
+            enemyElement.classList.add("enemy");
+            currentCell.appendChild(enemyElement);
+
+            // Check for tower collision
+            towers.forEach(tower => {
+                // Check if tower is in range (simple distance calculation)
+                if (Math.abs(tower.position - enemy.position) <= 2) {
+                    enemy.health -= 1; // Each tower deals 1 damage
+                    if (enemy.health <= 0) {
+                        enemyElement.remove();
+                        gold += enemyTypes[enemy.type].goldReward;
+                        document.getElementById("gold").textContent = gold;
+                    }
+                }
+            });
+        } else {
+            // Enemy reaches the end of the path
+            health -= 1;
+            if (health <= 0) {
+                alert("Game Over!");
+                resetGame();
+            }
+            enemies.splice(enemies.indexOf(enemy), 1); // Remove enemy
+        }
+    });
+}
+
+// Increase level difficulty
+function levelUp() {
+    level++;
+    document.getElementById("level").textContent = level;
+    spawnEnemies();
+}
+
+// Game update function
+function updateGame() {
+    moveEnemies();
+
+    // If all enemies are defeated, go to the next level
+    if (enemies.length === 0) {
+        levelUp();
+    }
+}
+
+// Start the game when page loads
+window.onload = function() {
+    startGame();
+    setInterval(updateGame, 1000); // Update every second (placeholder)
+};
 
 
 
