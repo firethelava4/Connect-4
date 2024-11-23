@@ -3,32 +3,70 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cyber Tower Defense</title>
-    <link rel="stylesheet" href="style.css">
+    <title>Cybersecurity Learning Platform for Seniors</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <div id="game-container">
-        <div id="info-panel">
-            <p>Health: <span id="health">5</span></p>
-            <p>Gold: <span id="gold">100</span></p>
-            <p>Level: <span id="level">1</span></p>
-            <button id="pause-btn">Pause</button>
-        </div>
-        <div id="game-board">
-            <!-- Game grid (e.g., 10x10) will go here -->
-        </div>
-    </div>
-    <div id="tower-selection">
-        <button class="tower-btn" id="basic-computer-btn">Basic Computer (20 Gold)</button>
-        <button class="tower-btn" id="medium-computer-btn">Medium Computer (50 Gold)</button>
-        <button class="tower-btn" id="large-computer-btn">Large Computer (100 Gold)</button>
-        <button class="tower-btn" id="cyber-attacker-btn">Cyber Attacker (500 Gold)</button>
-        <button class="tower-btn" id="cyber-security-btn">Cyber Security (1000 Gold)</button>
+    <!-- Main Container -->
+    <div class="container">
+        <header>
+            <h1>Cybersecurity Learning Platform</h1>
+            <div id="points">Total Points: 0</div>
+        </header>
+        
+        <!-- Main navigation -->
+        <nav>
+            <button onclick="showGames()">Mini Games</button>
+            <button onclick="showQuizzes()">Quizzes</button>
+            <button onclick="showDiscounts()">Redeem Discounts</button>
+        </nav>
+
+        <!-- Content Section -->
+        <section id="content">
+            <!-- Default: Show Games -->
+            <div id="game-section">
+                <h2>Mini Games</h2>
+                <button onclick="startCandyCrushGame()">Start Candy Crush Style Game</button>
+                <button onclick="startPasswordCheckGame()">Start Password Strength Game</button>
+                <button onclick="startQuizGame()">Start Quiz Game</button>
+            </div>
+
+            <!-- Candy Crush Game -->
+            <div id="candy-crush-game" style="display:none;">
+                <h2>Candy Crush-like Game</h2>
+                <p>Match 3 or more computers of the same type to score points.</p>
+                <div id="grid-container"></div>
+                <button onclick="startCandyCrushGame()">Start New Game</button>
+            </div>
+
+            <!-- Discount Redemption -->
+            <div id="discount-section" style="display:none;">
+                <h2>Redeem Your Points for Senior Discounts</h2>
+                <div id="available-discounts">No discounts available yet</div>
+            </div>
+
+            <!-- Quiz Section -->
+            <div id="quiz-section" style="display:none;">
+                <h2>Cybersecurity Quiz</h2>
+                <div id="quiz-questions"></div>
+                <button onclick="submitQuiz()">Submit Answers</button>
+            </div>
+
+            <!-- Password Strength Check -->
+            <div id="password-check-game" style="display:none;">
+                <h2>Password Strength Check</h2>
+                <p>Enter a password. The stronger the password, the more points you earn!</p>
+                <input type="text" id="password-input" placeholder="Enter your password" />
+                <button onclick="checkPasswordStrength()">Check Password</button>
+                <p id="password-feedback"></p>
+            </div>
+        </section>
     </div>
 
     <script src="script.js"></script>
 </body>
 </html>
+
 
 
 
