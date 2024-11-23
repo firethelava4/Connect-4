@@ -20,17 +20,13 @@
 
       <section id="games-section">
         <h2>Available Mini-Games and Quizzes</h2>
-        <div class="game" onclick="playGame('phishing-quiz')">
+        <div class="game" onclick="startGame('phishing-quiz')">
           <h3>Phishing Awareness Quiz</h3>
           <p>Learn how to spot phishing emails!</p>
         </div>
-        <div class="game" onclick="playGame('password-game')">
+        <div class="game" onclick="startGame('password-game')">
           <h3>Password Strength Tester</h3>
           <p>Learn to create strong passwords!</p>
-        </div>
-        <div class="game" onclick="playGame('secure-browsing')">
-          <h3>Secure Browsing Tips</h3>
-          <p>Test your safe browsing knowledge!</p>
         </div>
       </section>
 
@@ -46,6 +42,14 @@
         </div>
       </section>
     </div>
+
+    <!-- Game Modal -->
+    <div id="game-modal" class="modal hidden">
+      <div class="modal-content">
+        <button class="close-btn" onclick="closeGame()">×</button>
+        <div id="game-container"></div>
+      </div>
+    </div>
   </main>
 
   <footer>
@@ -55,4 +59,5 @@
   <script src="script.js"></script>
 </body>
 </html>
+
 
